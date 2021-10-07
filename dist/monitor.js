@@ -714,7 +714,9 @@ var monitor = (function () {
     overwriteFetch();
   }
 
-  var next = window.requestAnimationFrame ? window.requestAnimationFrame : setTimeout;
+  var next = window.requestAnimationFrame ? window.requestAnimationFrame : function (callback) {
+    setTimeout(callback, 1000 / 60);
+  };
   var frames = [];
   function fps() {
     var frame = 0;
