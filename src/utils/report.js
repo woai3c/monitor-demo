@@ -7,7 +7,7 @@ export function isSupportSendBeacon() {
     return !!window.navigator?.sendBeacon
 }
 
-const sendBeacon = isSupportSendBeacon()? window.navigator.sendBeacon.bind(window.navigator) : reportWithXHR
+const sendBeacon = isSupportSendBeacon() ? window.navigator.sendBeacon.bind(window.navigator) : reportWithXHR
 
 export function report(data, isImmediate = false) {
     if (!config.url) {
