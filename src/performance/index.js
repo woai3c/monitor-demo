@@ -3,6 +3,7 @@ import observePaint from './observePaint'
 import observeLCP from './observeLCP'
 import observeCLS from './observeCLS'
 import observeFID from './observeFID'
+import observerLoad from './observerLoad'
 import xhr from './xhr'
 import fetch from './fetch'
 import fps from './fps'
@@ -19,6 +20,7 @@ export default function performance() {
     xhr()
     fetch()
     fps()
+    observerLoad()
 
     if (isSupportSendBeacon()) {
         // eslint-disable-next-line no-extra-semi
