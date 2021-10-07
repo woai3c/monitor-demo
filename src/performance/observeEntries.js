@@ -9,23 +9,21 @@ export default function observeEntries() {
 
 export function observeEvent(entryType) {
     function entryHandler(list) {
-        const data = list.getEntries? list.getEntries() : list
+        const data = list.getEntries ? list.getEntries() : list
         for (const entry of data) {
             if (entryType === 'navigation' && observer) {
                 observer.disconnect()
             }
-            // 这两个参数为 0，说明资源解析错误或者跨域
-            // beacon 用于上报数据，所以不统计
-            if (
-                (entry.domainLookupStart && entry.connectStart === 0)
-                || filter(entry.initiatorType)
-            ) {
+            // nextHopProtocol 属性为空，说明资源解析错误或者跨域
+            // beacon 用于上报数据，所以不统计。xhr fetch 单独统计
+            if (!entry.nextHopProtocol || filter(entry.initiatorType)) {
                 return
             }
 
             addCache({
                 name: entry.name, // 资源名称
-                type: entryType,
+                subType: entryType,
+                type: 'performance',
                 sourceType: entry.initiatorType, // 资源类型
                 duration: entry.duration, // 资源加载耗时
                 dns: entry.domainLookupEnd - entry.domainLookupStart, // DNS 耗时
