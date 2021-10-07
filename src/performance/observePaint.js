@@ -15,6 +15,7 @@ export default function observePaint() {
     
                 const reportData = {
                     ...json,
+                    subType: entry.name,
                     type: 'performance',
                 }
 

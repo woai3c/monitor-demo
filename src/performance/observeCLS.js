@@ -8,7 +8,7 @@ export default function observeCLS() {
     let sessionValue = 0
     let sessionEntries = []
     const cls = {
-        entryType: 'layout-shift',
+        subType: 'layout-shift',
         name: 'layout-shift',
         type: 'performance',
         value: 0,

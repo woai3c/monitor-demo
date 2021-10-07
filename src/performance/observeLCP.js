@@ -18,6 +18,7 @@ export default function observeLCP() {
                 ...json,
                 target: entry.element.localName,
                 name: entry.entryType,
+                subType: entry.entryType,
                 type: 'performance',
             }
             

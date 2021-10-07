@@ -10,7 +10,8 @@ function overwriteFetch() {
             startTime,
             url,
             method: config?.method || 'GET',
-            type: 'fetch',
+            subType: 'fetch',
+            type: 'performance',
         }
 
         return originalFetch(url, config)

@@ -25,7 +25,8 @@ function overwriteOpenAndSend() {
                 url,
                 method,
                 success: status >= 200 && status < 300,
-                type: 'xhr',
+                subType: 'xhr',
+                type: 'performance',
             }
 
             addCache(reportData)

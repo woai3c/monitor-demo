@@ -53,7 +53,7 @@ function onInput(event) {
 
         addCache({
             duration,
-            entryType: 'first-input',
+            subType: 'first-input',
             event: event.type,
             name: 'first-input',
             target: event.target.localName,
