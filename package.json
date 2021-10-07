@@ -1,21 +1,19 @@
 {
-  "name": "root",
-  "private": true,
-  "workspaces": [
-    "packages/@monitor/*"
-  ],
+  "name": "monitor",
+  "scripts": {
+    "build": "rollup -c rollup/build.js",
+    "dev": "node rollup/dev.js",
+    "server": "node server.js"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "commit-msg": "node scripts/verify-commit.js"
+      "commit-msg": "FORCE_COLOR=1 node scripts/verify-commit.js"
     }
   },
   "lint-staged": {
-    "packages/*/{src,types}/**/*.ts": [
-      "eslint --ext .js,.ts"
-    ],
-    "packages/**/*.d.ts": [
-      "eslint --ext .js,.ts"
+    "packages/*/{src,types}/**/*.js": [
+      "eslint --ext .js"
     ]
   },
   "devDependencies": {
@@ -24,15 +22,18 @@
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-json": "^4.1.0",
     "@types/node": "^16.4.10",
-    "@typescript-eslint/eslint-plugin": "^4.28.5",
-    "@typescript-eslint/parser": "^4.28.5",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
     "husky": "4.2.3",
+    "jest": "^27.1.0",
     "lerna": "^3.22.1",
     "lint-staged": "^11.1.1",
-    "rollup": "^2.55.1",
-    "typescript": "^4.3.5"
+    "rollup": "^2.55.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
   }
 }

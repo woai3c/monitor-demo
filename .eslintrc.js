@@ -7,13 +7,8 @@ module.exports = {
         browser: true,
         es6: true,
         node: true,
-        jest: true,
     },
-    parser: '@typescript-eslint/parser',
     extends: 'airbnb-base',
-    plugins: [
-        '@typescript-eslint',
-    ],
     rules: {
         'no-console': 'off',
         'array-element-newline': ['error', 'consistent'],
@@ -64,5 +59,6 @@ module.exports = {
         'import/no-useless-path-segments': 'off',
         'import/newline-after-import': 'off',
         'no-path-concat': 'off',
+        'no-restricted-syntax': 'off',
     },
 }

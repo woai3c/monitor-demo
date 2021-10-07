@@ -1,5 +1,4 @@
 const path = require('path')
-const typescript = require('@rollup/plugin-typescript')
 const json = require('@rollup/plugin-json')
 const { babel } = require('@rollup/plugin-babel')
 
@@ -8,7 +7,6 @@ const resolveFile = function (filePath) {
 }
 
 const plugins = [
-    typescript(),
     json({
         compact: true,
     }),
@@ -33,12 +31,11 @@ const plugins = [
 module.exports = [
     {
         plugins,
-        input: resolveFile('src/index.ts'),
+        input: resolveFile('../src/index.js'),
         output: {
-            file: resolveFile('dist/monitor.js'),
-            format: 'esm',
+            file: resolveFile('../dist/monitor.js'),
+            format: 'iife',
             name: 'monitor',
         },
-        
     },
 ]

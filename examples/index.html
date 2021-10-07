@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .test {
+            margin-left: 200px;
+            width: 400px;
+            height: 400px;
+        }
+    </style>
+    <script src="../dist/monitor.js"></script>
+    <script>
+        monitor.init({
+            url: 'http://localhost:8080/sendData'
+        })
+    </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+<body>
+    <div>
+        <div>
+            <p>test</p>
+            <p>abc</p>
+        </div>
+    </div>
+    <a href="https://www.baidu.com">baidu.com</a>
+    <input type="text">
+    <img src="https://xxxtestabxxx.com/abc.jpg" alt="">
+    <img id="test" name="good" src="https://avatars.githubusercontent.com/u/22117876?v=4" alt="">
+    <div>test</div>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            console.log('pageshow')
+            if (event.persisted) {
+                console.log('This page was restored from the bfcache.');
+            } else {
+                console.log('This page was loaded normally.');
+            }
+        });
+
+        axios({
+            url: 'http://localhost:8080/sendData',
+            method: 'post',
+            data: JSON.stringify({
+                msg: 'hello',
+            }),
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8'
+            }
+        })
+
+        fetch('http://localhost:8080/sendData', {
+            method: 'post',
+            body: JSON.stringify({
+                msg: 'gggg',
+            }),
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8'
+            }
+        })
+
+        setInterval(() => {
+            let count = 100000000 * Math.random()
+            while (count > 0) {
+                count--
+            }
+        })
+    </script>
+</body>
+</html>
