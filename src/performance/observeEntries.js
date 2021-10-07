@@ -4,7 +4,6 @@ import { addCache } from '../utils/cache'
 
 export default function observeEntries() {
     observeEvent('resource')
-    observeEvent('navigation')
 }
 
 export function observeEvent(entryType) {
