@@ -38,3 +38,20 @@ export default function fps() {
 
     calculateFPS()
 }
+
+export function isBlocking(fpsList, below = 20, last = 3) {
+    let count = 0
+    for (let i = 0; i < fpsList.length; i++) {
+        if (fpsList[i] && fpsList[i] < below) {
+            count++
+        } else {
+            count = 0
+        }
+
+        if (count >= last) {
+            return true
+        }
+    }
+
+    return false
+}
