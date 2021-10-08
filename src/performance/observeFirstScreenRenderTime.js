@@ -10,7 +10,6 @@ executeAfterLoad(() => {
 
 let timer
 let observer
-let startTime = 0
 function checkDOMChange() {
     clearTimeout(timer)
     timer = setTimeout(() => {
@@ -25,18 +24,38 @@ function checkDOMChange() {
             })
 
             lazyReportCache()
+            entries = null
         } else {
             checkDOMChange()
         }
     }, 500)
 }
 
+let entries = []
 export default function observeFirstScreenRenderTime() {
     if (!MutationObserver) return
     
-    observer = new MutationObserver(() => {
+    const ignoreDOMList = ['style', 'script', 'link']
+    observer = new MutationObserver(mutationList => {
         checkDOMChange()
-        startTime = performance.now()
+        const entry = {
+            startTime: performance.now(),
+            children: [],
+        }
+        
+        for (const mutation of mutationList) {
+            if (mutation.addedNodes.length && isInScreen(mutation.target)) {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType === 1 && !ignoreDOMList.includes(node.localName) && isInScreen(node)) {
+                        entry.children.push(node)
+                    }
+                }
+            }
+        }
+
+        if (entry.children.length) {
+            entries.push(entry)
+        }
     })
 
     observer.observe(document, {
@@ -46,12 +65,36 @@ export default function observeFirstScreenRenderTime() {
 }
 
 function getRenderTime() {
-    const resource = performance.getEntriesByType('resource').filter(item => item.initiatorType === 'img')
-    resource.forEach(item => {
-        if (item.responseEnd > startTime) {
-            startTime = item.responseEnd
+    let startTime = 0
+    entries.forEach(entry => {
+        if (entry.startTime > startTime) {
+            startTime = entry.startTime
         }
     })
 
+    // 需要和当前页面所有加载图片的时间做对比，取最大值
+    // 图片请求时间要小于 startTime，响应结束时间要大于 startTime
+    performance.getEntriesByType('resource').forEach(item => {
+        if (
+            item.initiatorType === 'img'
+            && item.fetchStart < startTime 
+            && item.responseEnd > startTime
+        ) {
+            startTime = item.responseEnd
+        }
+    })
+    
     return startTime
+}
+
+// dom 对象是否在屏幕内
+function isInScreen(dom) {
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+    const rectInfo = dom.getBoundingClientRect()
+    if (rectInfo.left < viewportWidth && rectInfo.top < viewportHeight) {
+        return true
+    }
+
+    return false
 }
