@@ -6,9 +6,12 @@ export function executeAfterLoad(callback) {
     if (document.readyState === 'complete') {
         callback()
     } else {
-        window.addEventListener('load', () => {
+        const onLoad = () => {
             callback()
-        }, true)
+            window.removeEventListener('load', onLoad, true)
+        }
+
+        window.addEventListener('load', onLoad, true)
     }
 }
 
