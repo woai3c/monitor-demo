@@ -25,8 +25,7 @@ export default function performance() {
     observeFirstScreenRenderTime()
     
     if (isSupportSendBeacon()) {
-        // eslint-disable-next-line no-extra-semi
-        ;[onBeforeunload, onHidden].forEach(fn => {
+        [onBeforeunload, onHidden].forEach(fn => {
             fn(() => {
                 const data = getCache()
                 if (data.length) {
