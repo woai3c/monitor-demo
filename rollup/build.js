@@ -19,6 +19,7 @@ module.exports = [
             file: resolveFile('../dist/monitor.js'),
             format: 'iife',
             name: 'monitor',
+            sourcemap: true,
         },
     },
 ]
