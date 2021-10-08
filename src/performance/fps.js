@@ -2,7 +2,7 @@ import { report } from '../utils/report'
 import { deepCopy } from '../utils/utils'
 
 const next = window.requestAnimationFrame 
-    ? window.requestAnimationFrame : (callback) => { setTimeout(callback, 1000 / 60) }
+    ? requestAnimationFrame : (callback) => { setTimeout(callback, 1000 / 60) }
 
 const frames = []
 
