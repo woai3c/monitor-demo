@@ -2,10 +2,20 @@ import { isSupportPerformanceObserver } from './utils'
 import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 
-export default function observeLCP() {
-    if (!isSupportPerformanceObserver()) return
+let lcpDone = false
+export function isLCPDone() {
+    return lcpDone
+}
 
+export default function observeLCP() {
+    if (!isSupportPerformanceObserver()) {
+        lcpDone = true
+        return
+    }
+    
     const entryHandler = (list) => {
+        lcpDone = true
+
         if (observer) {
             observer.disconnect()
         }
