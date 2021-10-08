@@ -34,15 +34,16 @@ function checkDOMChange() {
 let entries = []
 export default function observeFirstScreenRenderTime() {
     if (!MutationObserver) return
-    
+
+    const next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout
     const ignoreDOMList = ['style', 'script', 'link']
+
     observer = new MutationObserver(mutationList => {
         checkDOMChange()
         const entry = {
-            startTime: performance.now(),
             children: [],
         }
-        
+
         for (const mutation of mutationList) {
             if (mutation.addedNodes.length && isInScreen(mutation.target)) {
                 for (const node of mutation.addedNodes) {
@@ -55,6 +56,9 @@ export default function observeFirstScreenRenderTime() {
 
         if (entry.children.length) {
             entries.push(entry)
+            next(() => {
+                entry.startTime = performance.now()
+            })
         }
     })
 
