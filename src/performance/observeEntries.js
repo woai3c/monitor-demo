@@ -3,19 +3,30 @@ import { lazyReportCache } from '../utils/report'
 import { addCache } from '../utils/cache'
 
 export default function observeEntries() {
-    observeEvent('resource')
+    executeAfterLoad(() => {
+        observeEvent('resource')
+        observeEvent('navigation')
+    })
 }
+
+let hasAlreadyCollected = false
 
 export function observeEvent(entryType) {
     function entryHandler(list) {
         const data = list.getEntries ? list.getEntries() : list
         for (const entry of data) {
-            if (entryType === 'navigation' && observer) {
-                observer.disconnect()
+            if (entryType === 'navigation') {
+                if (hasAlreadyCollected) return
+                
+                if (observer) {
+                    observer.disconnect()
+                }
+
+                hasAlreadyCollected = true
             }
             // nextHopProtocol 属性为空，说明资源解析错误或者跨域
             // beacon 用于上报数据，所以不统计。xhr fetch 单独统计
-            if (!entry.nextHopProtocol || filter(entry.initiatorType)) {
+            if ((!entry.nextHopProtocol && entryType !== 'navigation') || filter(entry.initiatorType)) {
                 return
             }
 
@@ -33,7 +44,7 @@ export function observeEvent(entryType) {
                 responseBodySize: entry.encodedBodySize, // 响应内容大小
                 responseHeaderSize: entry.transferSize - entry.encodedBodySize, // 响应头部大小
                 resourceSize: entry.decodedBodySize, // 资源解压后的大小
-                isCache: entry.transferSize === 0, // 是否命中缓存
+                isCache: isCache(entry), // 是否命中缓存
             })
         }
     
@@ -63,4 +74,9 @@ export function observeEvent(entryType) {
 const preventType = ['fetch', 'xmlhttprequest', 'beacon']
 function filter(type) {
     return preventType.includes(type)
+}
+
+function isCache(entry) {
+    // 直接从缓存读取或 304
+    return entry.transferSize === 0 || (entry.transferSize !== 0 && entry.encodedBodySize === 0)
 }
