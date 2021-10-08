@@ -10,7 +10,6 @@ export default function observeEntries() {
 }
 
 let hasAlreadyCollected = false
-
 export function observeEvent(entryType) {
     function entryHandler(list) {
         const data = list.getEntries ? list.getEntries() : list
@@ -63,6 +62,12 @@ export function observeEvent(entryType) {
 
 // 不统计以下类型的资源
 const preventType = ['fetch', 'xmlhttprequest', 'beacon']
+const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
+if (isSafari) {
+    // safari 会把接口请求当成 other
+    preventType.push('other')
+}
+
 function filter(type) {
     return preventType.includes(type)
 }
