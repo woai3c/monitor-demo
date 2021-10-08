@@ -9,7 +9,7 @@ function overwriteFetch() {
         const reportData = {
             startTime,
             url,
-            method: config?.method || 'GET',
+            method: (config?.method || 'GET').toUpperCase(),
             subType: 'fetch',
             type: 'performance',
         }

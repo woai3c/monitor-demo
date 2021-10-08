@@ -23,7 +23,7 @@ function overwriteOpenAndSend() {
                 startTime,
                 endTime,
                 url,
-                method,
+                method: (method || 'GET').toUpperCase(),
                 success: status >= 200 && status < 300,
                 subType: 'xhr',
                 type: 'performance',
