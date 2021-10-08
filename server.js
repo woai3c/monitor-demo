@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(bodyParser.text())
         
-app.post('/sendData', (req, res) => {
+app.post('/reportData', (req, res) => {
     console.log(req.body)
     res.status(200).send('')
 })
