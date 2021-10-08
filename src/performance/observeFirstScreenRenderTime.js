@@ -1,4 +1,4 @@
-import { executeAfterLoad } from './utils'
+import { executeAfterLoad, onBFCacheRestore } from './utils'
 import { isLCPDone } from './observeLCP'
 import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
@@ -65,6 +65,20 @@ export default function observeFirstScreenRenderTime() {
     observer.observe(document, {
         childList: true,
         subtree: true,
+    })
+
+    onBFCacheRestore(event => {
+        requestAnimationFrame(() => {
+            addCache({
+                startTime: performance.now() - event.timeStamp,
+                type: 'performance',
+                subType: 'first-screen-render-time',
+                bfc: true,
+                pageURL: window.location.href,
+            })
+            
+            lazyReportCache()
+        })
     })
 }
 

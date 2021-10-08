@@ -1,10 +1,14 @@
-import { isSupportPerformanceObserver } from './utils'
+import { isSupportPerformanceObserver, onBFCacheRestore } from './utils'
 import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 import { deepCopy } from '../utils/utils'
 
 export default function observeCLS() {
     if (!isSupportPerformanceObserver()) return
+
+    onBFCacheRestore(() => {
+        observeCLS()
+    })
 
     let sessionValue = 0
     let sessionEntries = []

@@ -1,4 +1,4 @@
-import { isSupportPerformanceObserver } from './utils'
+import { isSupportPerformanceObserver, onBFCacheRestore } from './utils'
 import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 
@@ -40,4 +40,19 @@ export default function observeLCP() {
 
     const observer = new PerformanceObserver(entryHandler)
     observer.observe({ type: 'largest-contentful-paint', buffered: true })
+
+    onBFCacheRestore(event => {
+        requestAnimationFrame(() => {
+            addCache({
+                startTime: performance.now() - event.timeStamp,
+                name: 'largest-contentful-paint',
+                subType: 'largest-contentful-paint',
+                type: 'performance',
+                pageURL: window.location.href,
+                bfc: true,
+            })
+
+            lazyReportCache()
+        })
+    })
 }

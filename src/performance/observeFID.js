@@ -1,8 +1,12 @@
-import { isSupportPerformanceObserver } from './utils'
+import { isSupportPerformanceObserver, onBFCacheRestore } from './utils'
 import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 
 export default function observeFID() {
+    onBFCacheRestore(() => {
+        observeFID()
+    })
+    
     if (!isSupportPerformanceObserver()) {
         const entryHandler = (list) => {
             if (observer) {

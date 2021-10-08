@@ -1,4 +1,4 @@
-import { isSupportPerformanceObserver } from './utils'
+import { isSupportPerformanceObserver, onBFCacheRestore } from './utils'
 import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 
@@ -28,4 +28,21 @@ export default function observePaint() {
     
     const observer = new PerformanceObserver(entryHandler)
     observer.observe({ type: 'paint', buffered: true })
+
+    onBFCacheRestore(event => {
+        requestAnimationFrame(() => {
+            ['first-paint', 'first-contentful-paint'].forEach(type => {
+                addCache({
+                    startTime: performance.now() - event.timeStamp,
+                    name: type,
+                    subType: type,
+                    type: 'performance',
+                    pageURL: window.location.href,
+                    bfc: true,
+                })
+            })
+            
+            lazyReportCache()
+        })
+    })
 }
