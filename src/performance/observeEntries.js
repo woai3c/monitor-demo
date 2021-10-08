@@ -17,7 +17,7 @@ export function observeEvent(entryType) {
         for (const entry of data) {
             if (entryType === 'navigation') {
                 if (hasAlreadyCollected) return
-                
+
                 if (observer) {
                     observer.disconnect()
                 }
@@ -56,16 +56,14 @@ export function observeEvent(entryType) {
         observer = new PerformanceObserver(entryHandler)
         observer.observe({ type: entryType, buffered: true })
     } else {
-        executeAfterLoad(() => {
-            const data = window.performance.getEntriesByType(entryType)
-            entryHandler(data)
+        const data = window.performance.getEntriesByType(entryType)
+        entryHandler(data)
             
-            setTimeout(() => {
-                if (entryType === 'resource') {
-                    // 收集数据后，清除资源的性能统计缓存
-                    window.performance.clearResourceTimings()
-                }
-            })
+        setTimeout(() => {
+            if (entryType === 'resource') {
+                // 收集数据后，清除资源的性能统计缓存
+                window.performance.clearResourceTimings()
+            }
         })
     }
 }
