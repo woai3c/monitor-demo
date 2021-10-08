@@ -58,13 +58,6 @@ export function observeEvent(entryType) {
     } else {
         const data = window.performance.getEntriesByType(entryType)
         entryHandler(data)
-            
-        setTimeout(() => {
-            if (entryType === 'resource') {
-                // 收集数据后，清除资源的性能统计缓存
-                window.performance.clearResourceTimings()
-            }
-        })
     }
 }
 
