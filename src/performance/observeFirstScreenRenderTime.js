@@ -87,10 +87,11 @@ function getRenderTime() {
     return startTime
 }
 
+const viewportWidth = window.innerWidth
+const viewportHeight = window.innerHeight
+
 // dom 对象是否在屏幕内
 function isInScreen(dom) {
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
     const rectInfo = dom.getBoundingClientRect()
     if (rectInfo.left < viewportWidth && rectInfo.top < viewportHeight) {
         return true
