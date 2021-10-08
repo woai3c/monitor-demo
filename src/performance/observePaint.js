@@ -18,6 +18,7 @@ export default function observePaint() {
                 ...json,
                 subType: entry.name,
                 type: 'performance',
+                pageURL: window.location.href,
             }
 
             addCache(reportData)

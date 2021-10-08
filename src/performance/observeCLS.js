@@ -12,6 +12,7 @@ export default function observeCLS() {
         subType: 'layout-shift',
         name: 'layout-shift',
         type: 'performance',
+        pageURL: window.location.href,
         value: 0,
     }
 

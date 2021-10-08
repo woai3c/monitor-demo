@@ -15,6 +15,7 @@ export default function observeFID() {
                 json.event = json.name
                 json.name = json.entryType
                 json.type = 'performance'
+                json.pageURL = window.location.href
                 delete json.cancelable
 
                 addCache(json)
@@ -59,7 +60,7 @@ function onInput(event) {
             target: event.target.localName,
             startTime: event.timeStamp,
             type: 'performance',
-
+            pageURL: window.location.href,
         })
 
         lazyReportCache()

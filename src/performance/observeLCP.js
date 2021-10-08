@@ -30,6 +30,7 @@ export default function observeLCP() {
                 name: entry.entryType,
                 subType: entry.entryType,
                 type: 'performance',
+                pageURL: window.location.href,
             }
             
             addCache(reportData)
