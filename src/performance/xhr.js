@@ -1,4 +1,3 @@
-import { addCache } from '../utils/cache'
 import { originalOpen, originalSend, originalProto } from '../utils/xhr'
 import { lazyReportCache } from '../utils/report'
 
@@ -29,8 +28,7 @@ function overwriteOpenAndSend() {
                 type: 'performance',
             }
 
-            addCache(reportData)
-            lazyReportCache()
+            lazyReportCache(reportData)
             
             this.removeEventListener('loadend', onLoadend, true)
         }

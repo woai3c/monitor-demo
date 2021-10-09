@@ -1,6 +1,5 @@
 import { isSupportPerformanceObserver, executeAfterLoad } from './utils'
 import { lazyReportCache } from '../utils/report'
-import { addCache } from '../utils/cache'
 
 export default function observeEntries() {
     executeAfterLoad(() => {
@@ -29,7 +28,7 @@ export function observeEvent(entryType) {
                 return
             }
 
-            addCache({
+            lazyReportCache({
                 name: entry.name, // 资源名称
                 subType: entryType,
                 type: 'performance',
@@ -46,8 +45,6 @@ export function observeEvent(entryType) {
                 isCache: isCache(entry), // 是否命中缓存
             })
         }
-    
-        lazyReportCache()
     }
 
     let observer

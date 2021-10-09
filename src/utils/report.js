@@ -1,5 +1,5 @@
 import { originalOpen, originalSend } from './xhr'
-import { getCache, clearCache } from './cache'
+import { addCache, getCache, clearCache } from './cache'
 import { sessionID } from '../utils/generateUniqueID'
 import config from '../config'
 
@@ -20,7 +20,7 @@ export function report(data, isImmediate = false) {
         userID: config.userID,
         data,
     })
-
+    
     if (isImmediate) {
         sendBeacon(config.url, reportData)
         return
@@ -38,7 +38,9 @@ export function report(data, isImmediate = false) {
 }
 
 let timer = null
-export function lazyReportCache(timeout = 3000) {
+export function lazyReportCache(data, timeout = 3000) {
+    addCache(data)
+
     clearTimeout(timer)
     timer = setTimeout(() => {
         const data = getCache()

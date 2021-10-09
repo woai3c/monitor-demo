@@ -1,4 +1,3 @@
-import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 
 const originalFetch = window.fetch
@@ -23,8 +22,7 @@ function overwriteFetch() {
             reportData.status = data.status
             reportData.success = data.ok
 
-            addCache(reportData)
-            lazyReportCache()
+            lazyReportCache(reportData)
 
             return res
         })
@@ -34,8 +32,7 @@ function overwriteFetch() {
             reportData.status = 0
             reportData.success = false
 
-            addCache(reportData)
-            lazyReportCache()
+            lazyReportCache(reportData)
 
             throw err
         })

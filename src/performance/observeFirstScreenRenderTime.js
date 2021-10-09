@@ -1,6 +1,5 @@
 import { executeAfterLoad, onBFCacheRestore } from './utils'
 import { isLCPDone } from './observeLCP'
-import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 
 let isOnLoaded = false
@@ -16,14 +15,13 @@ function checkDOMChange() {
         // 等 load、lcp 事件触发后并且 DOM 树不再变化时，计算首屏渲染时间
         if (isOnLoaded && isLCPDone()) {
             observer && observer.disconnect()
-            addCache({
+            lazyReportCache({
                 type: 'performance',
                 subType: 'first-screen-render-time',
                 startTime: getRenderTime(),
                 pageURL: window.location.href,
             })
 
-            lazyReportCache()
             entries = null
         } else {
             checkDOMChange()
@@ -69,15 +67,13 @@ export default function observeFirstScreenRenderTime() {
 
     onBFCacheRestore(event => {
         requestAnimationFrame(() => {
-            addCache({
+            lazyReportCache({
                 startTime: performance.now() - event.timeStamp,
                 type: 'performance',
                 subType: 'first-screen-render-time',
                 bfc: true,
                 pageURL: window.location.href,
             })
-            
-            lazyReportCache()
         })
     })
 }

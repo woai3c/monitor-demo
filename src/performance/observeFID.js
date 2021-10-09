@@ -1,5 +1,4 @@
 import { isSupportPerformanceObserver, onBFCacheRestore } from './utils'
-import { addCache } from '../utils/cache'
 import { lazyReportCache } from '../utils/report'
 
 export default function observeFID() {
@@ -22,8 +21,7 @@ export default function observeFID() {
                 json.pageURL = window.location.href
                 delete json.cancelable
 
-                addCache(json)
-                lazyReportCache()
+                lazyReportCache(json)
             }
         }
     
@@ -56,7 +54,7 @@ function onInput(event) {
         // (e.g. event.timeStamp) and when it could run the callback (e.g. `now`).
         const duration = now - event.timeStamp
 
-        addCache({
+        lazyReportCache({
             duration,
             subType: 'first-input',
             event: event.type,
@@ -67,7 +65,6 @@ function onInput(event) {
             pageURL: window.location.href,
         })
 
-        lazyReportCache()
         eachEventType(window.removeEventListener)
     }
 }
