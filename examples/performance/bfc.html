@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bfc</title>
+    <script src="../../dist/monitor.js"></script>
+    <script>
+        monitor.init({
+            url: 'http://localhost:8080/reportData'
+        })
+    </script>
+</head>
+<body>
+    <div>
+        test
+    </div>
+    <p>good</p>
+    <a href="https://www.baidu.com">www.baidu.com</a>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            console.log('pageshow')
+            if (event.persisted) {
+                console.log('This page was restored from the bfcache.');
+            } else {
+                console.log('This page was loaded normally.');
+            }
+        })
+    </script>
+</body>
+</html>

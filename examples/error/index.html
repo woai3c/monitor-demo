@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>error</title>
+    <script src="../../dist/monitor.js"></script>
+    <script>
+        monitor.init({
+            url: 'http://localhost:8080/reportData'
+        })
+    </script>
+</head>
+<body>
+    <img src="http://xxxss.ss.com/a.jpg" alt="">
+    <script>
+        function test() {
+            return Promise.reject(Error('promise'))
+        }
+        
+        test()
+        throw Error('test')
+    </script>
+</body>
+</html>
