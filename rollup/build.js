@@ -22,4 +22,24 @@ module.exports = [
             sourcemap: true,
         },
     },
+    {
+        plugins,
+        input: resolveFile('../src/index.js'),
+        output: {
+            file: resolveFile('../dist/monitor.esm.js'),
+            format: 'esm',
+            name: 'monitor',
+            sourcemap: true,
+        },
+    },
+    {
+        plugins,
+        input: resolveFile('../src/index.js'),
+        output: {
+            file: resolveFile('../dist/monitor.cjs.js'),
+            format: 'cjs',
+            name: 'monitor',
+            sourcemap: true,
+        },
+    },
 ]
