@@ -2,6 +2,7 @@ const config = {
     url: '',
     appID: '',
     userID: '',
+    Vue: null,
 }
 
 export default config
