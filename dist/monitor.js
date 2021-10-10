@@ -22,6 +22,46 @@ var monitor = (function () {
         return target
     }
 
+    function onBFCacheRestore(callback) {
+        window.addEventListener('pageshow', event => {
+            if (event.persisted) {
+                callback(event);
+            }
+        }, true);
+    }
+
+    function onBeforeunload(callback) {
+        window.addEventListener('beforeunload', callback, true);
+    }
+
+    function onHidden(callback, once) {
+        const onHiddenOrPageHide = (event) => {
+            if (event.type === 'pagehide' || document.visibilityState === 'hidden') {
+                callback(event);
+                if (once) {
+                    window.removeEventListener('visibilitychange', onHiddenOrPageHide, true);
+                    window.removeEventListener('pagehide', onHiddenOrPageHide, true);
+                }
+            }
+        };
+
+        window.addEventListener('visibilitychange', onHiddenOrPageHide, true);
+        window.addEventListener('pagehide', onHiddenOrPageHide, true);
+    }
+
+    function executeAfterLoad(callback) {
+        if (document.readyState === 'complete') {
+            callback();
+        } else {
+            const onLoad = () => {
+                callback();
+                window.removeEventListener('load', onLoad, true);
+            };
+
+            window.addEventListener('load', onLoad, true);
+        }
+    }
+
     const cache = [];
 
     function getCache() {
@@ -39,8 +79,6 @@ var monitor = (function () {
     function generateUniqueID() {
         return `v2-${Date.now()}-${Math.floor(Math.random() * (9e12 - 1)) + 1e12}`
     }
-
-    const sessionID = generateUniqueID();
 
     const config = {
         url: '',
@@ -63,6 +101,7 @@ var monitor = (function () {
 
     const sendBeacon = isSupportSendBeacon() ? window.navigator.sendBeacon.bind(window.navigator) : reportWithXHR;
 
+    const sessionID = generateUniqueID();
     function report(data, isImmediate = false) {
         if (!config.url) {
             console.error('请设置上传 url 地址');
@@ -91,12 +130,12 @@ var monitor = (function () {
         }
     }
 
-    let timer$1 = null;
+    let timer$2 = null;
     function lazyReportCache(data, timeout = 3000) {
         addCache(data);
 
-        clearTimeout(timer$1);
-        timer$1 = setTimeout(() => {
+        clearTimeout(timer$2);
+        timer$2 = setTimeout(() => {
             const data = getCache();
             if (data.length) {
                 report(data);
@@ -119,14 +158,14 @@ var monitor = (function () {
 
             if (target.src || target.href) {
                 const url = target.src || target.href;
-                report({
+                lazyReportCache({
                     url,
                     type: 'error',
                     subType: 'resource',
                     startTime: e.timeStamp,
                     html: target.outerHTML,
-                    resourceType: target.localName,
-                    paths: e.path.map(item => item.localName).filter(Boolean),
+                    resourceType: target.tagName,
+                    paths: e.path.map(item => item.tagName).filter(Boolean),
                     pageURL: window.location.href,
                 });
             }
@@ -134,7 +173,7 @@ var monitor = (function () {
 
         // 监听 js 错误
         window.onerror = (msg, url, line, column, error) => {
-            report({
+            lazyReportCache({
                 msg,
                 line,
                 column,
@@ -148,63 +187,37 @@ var monitor = (function () {
 
         // 监听 promise 错误 缺点是获取不到列数据
         window.addEventListener('unhandledrejection', e => {
-            report({
+            lazyReportCache({
                 reason: e.reason?.stack,
                 subType: 'promise',
                 type: 'error',
                 startTime: e.timeStamp,
+                pageURL: window.location.href,
             });
         });
 
         if (config.Vue) {
             config.Vue.config.errorHandler = (err, vm, info) => {
-                console.log(err, vm, info);
+                console.error(err);
+
+                lazyReportCache({
+                    info,
+                    error: err.stack,
+                    subType: 'vue',
+                    type: 'error',
+                    startTime: performance.now(),
+                    pageURL: window.location.href,
+                });
             };
         }
+
+        onBFCacheRestore(() => {
+            error();
+        });
     }
 
     function isSupportPerformanceObserver() {
         return !!window.PerformanceObserver
-    }
-
-    function executeAfterLoad(callback) {
-        if (document.readyState === 'complete') {
-            callback();
-        } else {
-            const onLoad = () => {
-                callback();
-                window.removeEventListener('load', onLoad, true);
-            };
-
-            window.addEventListener('load', onLoad, true);
-        }
-    }
-
-    function onBFCacheRestore(callback) {
-        window.addEventListener('pageshow', event => {
-            if (event.persisted) {
-                callback(event);
-            }
-        }, true);
-    }
-
-    function onBeforeunload(callback) {
-        window.addEventListener('beforeunload', callback, true);
-    }
-
-    function onHidden(callback, once) {
-        const onHiddenOrPageHide = (event) => {
-            if (event.type === 'pagehide' || document.visibilityState === 'hidden') {
-                callback(event);
-                if (once) {
-                    window.removeEventListener('visibilitychange', onHiddenOrPageHide, true);
-                    window.removeEventListener('pagehide', onHiddenOrPageHide, true);
-                }
-            }
-        };
-
-        window.addEventListener('visibilitychange', onHiddenOrPageHide, true);
-        window.addEventListener('pagehide', onHiddenOrPageHide, true);
     }
 
     function observeEntries() {
@@ -346,7 +359,7 @@ var monitor = (function () {
 
                 const reportData = {
                     ...json,
-                    target: entry.element?.localName,
+                    target: entry.element?.tagName,
                     name: entry.entryType,
                     subType: entry.entryType,
                     type: 'performance',
@@ -449,7 +462,7 @@ var monitor = (function () {
                 
                 for (const entry of list.getEntries()) {
                     const json = entry.toJSON();
-                    json.nodeName = entry.localName;
+                    json.nodeName = entry.tagName;
                     json.event = json.name;
                     json.name = json.entryType;
                     json.type = 'performance';
@@ -494,7 +507,7 @@ var monitor = (function () {
                 subType: 'first-input',
                 event: event.type,
                 name: 'first-input',
-                target: event.target.localName,
+                target: event.target.tagName,
                 startTime: event.timeStamp,
                 type: 'performance',
                 pageURL: window.location.href,
@@ -551,11 +564,11 @@ var monitor = (function () {
         isOnLoaded = true;
     });
 
-    let timer;
+    let timer$1;
     let observer;
     function checkDOMChange() {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
+        clearTimeout(timer$1);
+        timer$1 = setTimeout(() => {
             // 等 load、lcp 事件触发后并且 DOM 树不再变化时，计算首屏渲染时间
             if (isOnLoaded && isLCPDone()) {
                 observer && observer.disconnect();
@@ -578,7 +591,7 @@ var monitor = (function () {
         if (!MutationObserver) return
 
         const next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout;
-        const ignoreDOMList = ['style', 'script', 'link'];
+        const ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK'];
 
         observer = new MutationObserver(mutationList => {
             checkDOMChange();
@@ -589,7 +602,7 @@ var monitor = (function () {
             for (const mutation of mutationList) {
                 if (mutation.addedNodes.length && isInScreen(mutation.target)) {
                     for (const node of mutation.addedNodes) {
-                        if (node.nodeType === 1 && !ignoreDOMList.includes(node.localName) && isInScreen(node)) {
+                        if (node.nodeType === 1 && !ignoreDOMList.includes(node.tagName) && isInScreen(node)) {
                             entry.children.push(node);
                         }
                     }
@@ -646,12 +659,12 @@ var monitor = (function () {
     }
 
     const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const viewportHeight$1 = window.innerHeight;
 
     // dom 对象是否在屏幕内
     function isInScreen(dom) {
         const rectInfo = dom.getBoundingClientRect();
-        if (rectInfo.left < viewportWidth && rectInfo.top < viewportHeight) {
+        if (rectInfo.left < viewportWidth && rectInfo.top < viewportHeight$1) {
             return true
         }
 
@@ -791,8 +804,157 @@ var monitor = (function () {
         fps();
         observerLoad();
         observeFirstScreenRenderTime();
+    }
+
+    let uuid = '';
+    function getUUID() {
+        if (uuid) return uuid
+
+        // 如果是手机 APP，可以调用原生方法或者设备唯一标识当成 uuid
+        uuid = localStorage.getItem('uuid');
+        if (uuid) return uuid
+
+        uuid = generateUniqueID();
+        localStorage.setItem('uuid', uuid);
+        return uuid
+    }
+
+    function pv() {
+        lazyReportCache({
+            type: 'behavior',
+            subType: 'pv',
+            startTime: performance.now(),
+            pageURL: window.location.href,
+            referrer: document.referrer,
+            uuid: getUUID(),
+        });
+    }
+
+    function pageAccessDuration() {
+        onBeforeunload(() => {
+            report({
+                type: 'behavior',
+                subType: 'pageAccessDuration',
+                startTime: performance.now(),
+                pageURL: window.location.href,
+                uuid: getUUID(),
+            }, true);
+        });
+    }
+
+    let timer;
+    let startTime = 0;
+    let hasReport = false;
+    let pageHeight = 0;
+    let scrollTop = 0;
+    let viewportHeight = 0;
+
+    function pageAccessHeight() {
+        window.addEventListener('scroll', onScroll);
+
+        onBeforeunload(() => {
+            const now = performance.now();
+            report({
+                startTime: now,
+                duration: now - startTime,
+                type: 'behavior',
+                subType: 'pageAccessHeight',
+                pageURL: window.location.href,
+                value: toPercent(scrollTop + viewportHeight / pageHeight),
+                uuid: getUUID(),
+            }, true);
+        });
+
+        // 页面加载完成后初始化记录当前访问高度、时间
+        executeAfterLoad(() => {
+            startTime = performance.now();
+            pageHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+            scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            viewportHeight = window.innerHeight;
+        });
+    }
+
+    function onScroll() {
+        clearTimeout(timer);
+        const now = performance.now();
         
-        if (isSupportSendBeacon()) {
+        if (!hasReport) {
+            hasReport = true;
+            lazyReportCache({
+                startTime: now,
+                duration: now - startTime,
+                type: 'behavior',
+                subType: 'pageAccessHeight',
+                pageURL: window.location.href,
+                value: toPercent(scrollTop + viewportHeight / pageHeight),
+                uuid: getUUID(),
+            });
+        }
+
+        timer = setTimeout(() => {
+            hasReport = false;
+            startTime = now;
+            pageHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+            scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            viewportHeight = window.innerHeight;        
+        }, 500);
+    }
+
+    function toPercent(val) {
+        if (val >= 1) return '100%'
+        return (val * 100).toFixed(2) + '%'
+    }
+
+    function onClick() {
+        ['mousedown', 'touchstart'].forEach(eventType => {
+            let timer;
+            window.addEventListener(eventType, event => {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    const target = event.target;
+                    const { top, left } = target.getBoundingClientRect();
+                    
+                    lazyReportCache({
+                        top,
+                        left,
+                        eventType,
+                        pageHeight: document.documentElement.scrollHeight || document.body.scrollHeight,
+                        scrollTop: document.documentElement.scrollTop || document.body.scrollTop,
+                        type: 'behavior',
+                        subType: 'click',
+                        target: target.tagName,
+                        paths: event.path.map(item => item.tagName).filter(Boolean),
+                        startTime: event.timeStamp,
+                        pageURL: window.location.href,
+                        outerHTML: target.outerHTML,
+                        innerHTML: target.innerHTML,
+                        width: target.offsetWidth,
+                        height: target.offsetHeight,
+                        viewport: {
+                            width: window.innerWidth,
+                            height: window.innerHeight,
+                        },
+                    });
+                }, 500);
+            });
+        });
+    }
+
+    function behavior() {
+        pv();
+        pageAccessDuration();
+        pageAccessHeight();
+        onClick();
+    }
+
+    const monitor = {
+        init(options = {}) {
+            setConfig(options);
+            error();
+            performance$1();
+            behavior();
+
+            // 当页面进入后台或关闭前时，将所有的 cache 数据进行上报
             [onBeforeunload, onHidden].forEach(fn => {
                 fn(() => {
                     const data = getCache();
@@ -802,14 +964,6 @@ var monitor = (function () {
                     }
                 });
             });
-        }
-    }
-
-    const monitor = {
-        init(options = {}) {
-            setConfig(options);
-            error();
-            performance$1();
         },
     };
 
