@@ -16,7 +16,7 @@ export default function onVueRouter(router) {
             data,
             name: to.name || to.path,
             type: 'behavior',
-            subType: 'vueRouterChange',
+            subType: 'vue-router-change',
             startTime: performance.now(),
             from: from.fullPath,
             to: to.fullPath,

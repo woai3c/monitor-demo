@@ -17,7 +17,7 @@ function checkDOMChange() {
             observer && observer.disconnect()
             lazyReportCache({
                 type: 'performance',
-                subType: 'first-screen-render-time',
+                subType: 'first-screen-render-paint',
                 startTime: getRenderTime(),
                 pageURL: getPageURL(),
             })
@@ -30,7 +30,7 @@ function checkDOMChange() {
 }
 
 let entries = []
-export default function observeFirstScreenRenderTime() {
+export default function observeFirstScreenRenderPaint() {
     if (!MutationObserver) return
 
     const next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout
@@ -70,7 +70,7 @@ export default function observeFirstScreenRenderTime() {
             lazyReportCache({
                 startTime: performance.now() - event.timeStamp,
                 type: 'performance',
-                subType: 'first-screen-render-time',
+                subType: 'first-screen-render-paint',
                 bfc: true,
                 pageURL: getPageURL(),
             })

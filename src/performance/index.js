@@ -4,7 +4,7 @@ import observeLCP from './observeLCP'
 import observeCLS from './observeCLS'
 import observeFID from './observeFID'
 import observerLoad from './observerLoad'
-import observeFirstScreenRenderTime from './observeFirstScreenRenderTime'
+import observeFirstScreenRenderPaint from './observeFirstScreenRenderPaint'
 import xhr from './xhr'
 import fetch from './fetch'
 import fps from './fps'
@@ -21,7 +21,7 @@ export default function performance() {
     fetch()
     fps()
     observerLoad()
-    observeFirstScreenRenderTime()
+    observeFirstScreenRenderPaint()
 
     if (config.vue?.Vue && config.vue?.router) {
         onVueRouter(config.vue.Vue, config.vue.router)

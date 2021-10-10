@@ -8,7 +8,7 @@ export default function error() {
         oldConsoleError.apply(this, args)
         lazyReportCache({
             type: 'error',
-            subType: 'consoleError',
+            subType: 'console-error',
             startTime: performance.now(),
             errData: args,
             pageURL: getPageURL(),

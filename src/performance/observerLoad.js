@@ -9,7 +9,7 @@ export default function observerLoad() {
             ['load', 'DOMContentLoaded'].forEach(type => {
                 lazyReportCache({
                     startTime: performance.now() - event.timeStamp,
-                    subType: type,
+                    subType: type.toLocaleLowerCase(),
                     type: 'performance',
                     pageURL: getPageURL(),
                     bfc: true,
@@ -23,7 +23,7 @@ function onEvent(type) {
     function callback() {
         lazyReportCache({
             type: 'performance',
-            subType: type,
+            subType: type.toLocaleLowerCase(),
             startTime: performance.now(),
         })
 

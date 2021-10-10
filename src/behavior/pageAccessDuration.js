@@ -6,7 +6,7 @@ export default function pageAccessDuration() {
     onBeforeunload(() => {
         report({
             type: 'behavior',
-            subType: 'pageAccessDuration',
+            subType: 'page-access-duration',
             startTime: performance.now(),
             pageURL: getPageURL(),
             uuid: getUUID(),

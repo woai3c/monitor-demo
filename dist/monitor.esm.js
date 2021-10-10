@@ -307,7 +307,7 @@ function error() {
     oldConsoleError.apply(_this, args);
     lazyReportCache({
       type: 'error',
-      subType: 'consoleError',
+      subType: 'console-error',
       startTime: performance.now(),
       errData: args,
       pageURL: getPageURL()
@@ -768,7 +768,7 @@ function observerLoad() {
       ['load', 'DOMContentLoaded'].forEach(function (type) {
         lazyReportCache({
           startTime: performance.now() - event.timeStamp,
-          subType: type,
+          subType: type.toLocaleLowerCase(),
           type: 'performance',
           pageURL: getPageURL(),
           bfc: true
@@ -782,7 +782,7 @@ function onEvent(type) {
   function callback() {
     lazyReportCache({
       type: 'performance',
-      subType: type,
+      subType: type.toLocaleLowerCase(),
       startTime: performance.now()
     });
     window.removeEventListener(type, callback, true);
@@ -806,7 +806,7 @@ function checkDOMChange() {
       observer && observer.disconnect();
       lazyReportCache({
         type: 'performance',
-        subType: 'first-screen-render-time',
+        subType: 'first-screen-render-paint',
         startTime: getRenderTime(),
         pageURL: getPageURL()
       });
@@ -818,7 +818,7 @@ function checkDOMChange() {
 }
 
 var entries = [];
-function observeFirstScreenRenderTime() {
+function observeFirstScreenRenderPaint() {
   if (!MutationObserver) return;
   var next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout;
   var ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK'];
@@ -876,7 +876,7 @@ function observeFirstScreenRenderTime() {
       lazyReportCache({
         startTime: performance.now() - event.timeStamp,
         type: 'performance',
-        subType: 'first-screen-render-time',
+        subType: 'first-screen-render-paint',
         bfc: true,
         pageURL: getPageURL()
       });
@@ -1092,7 +1092,7 @@ function performance$1() {
   fetch();
   fps();
   observerLoad();
-  observeFirstScreenRenderTime();
+  observeFirstScreenRenderPaint();
 
   if ((_config$vue = config.vue) !== null && _config$vue !== void 0 && _config$vue.Vue && (_config$vue2 = config.vue) !== null && _config$vue2 !== void 0 && _config$vue2.router) {
     onVueRouter$1(config.vue.Vue, config.vue.router);
@@ -1125,7 +1125,7 @@ function pageAccessDuration() {
   onBeforeunload(function () {
     report({
       type: 'behavior',
-      subType: 'pageAccessDuration',
+      subType: 'page-access-duration',
       startTime: performance.now(),
       pageURL: getPageURL(),
       uuid: getUUID()
@@ -1147,7 +1147,7 @@ function pageAccessHeight() {
       startTime: now,
       duration: now - startTime,
       type: 'behavior',
-      subType: 'pageAccessHeight',
+      subType: 'page-access-height',
       pageURL: getPageURL(),
       value: toPercent(scrollTop + viewportHeight / pageHeight),
       uuid: getUUID()
@@ -1172,7 +1172,7 @@ function onScroll() {
       startTime: now,
       duration: now - startTime,
       type: 'behavior',
-      subType: 'pageAccessHeight',
+      subType: 'page-access-height',
       pageURL: getPageURL(),
       value: toPercent(scrollTop + viewportHeight / pageHeight),
       uuid: getUUID()
@@ -1248,7 +1248,7 @@ function onVueRouter(router) {
       data: data,
       name: to.name || to.path,
       type: 'behavior',
-      subType: 'vueRouterChange',
+      subType: 'vue-router-change',
       startTime: performance.now(),
       from: from.fullPath,
       to: to.fullPath
