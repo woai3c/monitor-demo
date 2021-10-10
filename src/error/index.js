@@ -60,8 +60,8 @@ export default function error() {
         })
     })
 
-    if (config.Vue) {
-        config.Vue.config.errorHandler = (err, vm, info) => {
+    if (config.vue?.Vue) {
+        config.vue.Vue.config.errorHandler = (err, vm, info) => {
             console.error(err)
 
             lazyReportCache({

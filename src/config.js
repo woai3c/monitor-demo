@@ -2,7 +2,10 @@ const config = {
     url: '',
     appID: '',
     userID: '',
-    Vue: null,
+    vue: {
+        Vue: null,
+        router: null,
+    },
 }
 
 export default config
