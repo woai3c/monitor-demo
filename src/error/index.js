@@ -16,8 +16,8 @@ export default function error() {
                 subType: 'resource',
                 startTime: e.timeStamp,
                 html: target.outerHTML,
-                resourceType: target.localName,
-                paths: e.path.map(item => item.localName).filter(Boolean),
+                resourceType: target.tagName,
+                paths: e.path.map(item => item.tagName).filter(Boolean),
                 pageURL: window.location.href,
             })
         }

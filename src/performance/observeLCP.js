@@ -26,7 +26,7 @@ export default function observeLCP() {
 
             const reportData = {
                 ...json,
-                target: entry.element?.localName,
+                target: entry.element?.tagName,
                 name: entry.entryType,
                 subType: entry.entryType,
                 type: 'performance',

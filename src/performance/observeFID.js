@@ -15,7 +15,7 @@ export default function observeFID() {
             
             for (const entry of list.getEntries()) {
                 const json = entry.toJSON()
-                json.nodeName = entry.localName
+                json.nodeName = entry.tagName
                 json.event = json.name
                 json.name = json.entryType
                 json.type = 'performance'
@@ -60,7 +60,7 @@ function onInput(event) {
             subType: 'first-input',
             event: event.type,
             name: 'first-input',
-            target: event.target.localName,
+            target: event.target.tagName,
             startTime: event.timeStamp,
             type: 'performance',
             pageURL: window.location.href,
