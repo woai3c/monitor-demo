@@ -8,6 +8,8 @@ import observeFirstScreenRenderTime from './observeFirstScreenRenderTime'
 import xhr from './xhr'
 import fetch from './fetch'
 import fps from './fps'
+import onVueRouter from './onVueRouter'
+import config from '../config'
 
 export default function performance() {
     observeEntries()
@@ -20,4 +22,8 @@ export default function performance() {
     fps()
     observerLoad()
     observeFirstScreenRenderTime()
+
+    if (config.vue?.Vue && config.vue?.router) {
+        onVueRouter(config.vue.Vue, config.vue.router)
+    }
 }
