@@ -1,8 +1,20 @@
 import { lazyReportCache } from '../utils/report'
-import { onBFCacheRestore } from '../utils/utils'
+import { onBFCacheRestore, getPageURL } from '../utils/utils'
 import config from '../config'
 
 export default function error() {
+    const oldConsoleError = window.console.error 
+    window.console.error = (...args) => { 
+        oldConsoleError.apply(this, args)
+        lazyReportCache({
+            type: 'error',
+            subType: 'consoleError',
+            startTime: performance.now(),
+            errData: args,
+            pageURL: getPageURL(),
+        })
+    }
+
     // 捕获资源加载失败错误 js css img...
     window.addEventListener('error', e => {
         const target = e.target
@@ -18,7 +30,7 @@ export default function error() {
                 html: target.outerHTML,
                 resourceType: target.tagName,
                 paths: e.path.map(item => item.tagName).filter(Boolean),
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             })
         }
     }, true)
@@ -44,7 +56,7 @@ export default function error() {
             subType: 'promise',
             type: 'error',
             startTime: e.timeStamp,
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
         })
     })
 
@@ -58,7 +70,7 @@ export default function error() {
                 subType: 'vue',
                 type: 'error',
                 startTime: performance.now(),
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             })
         }
     }
