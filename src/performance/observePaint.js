@@ -1,4 +1,5 @@
-import { isSupportPerformanceObserver, onBFCacheRestore } from './utils'
+import { isSupportPerformanceObserver } from './utils'
+import { onBFCacheRestore } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
 
 export default function observePaint() {

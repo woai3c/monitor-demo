@@ -1,4 +1,5 @@
-import { executeAfterLoad, onBFCacheRestore } from './utils'
+import { executeAfterLoad } from './utils'
+import { onBFCacheRestore } from '../utils/utils'
 import { isLCPDone } from './observeLCP'
 import { lazyReportCache } from '../utils/report'
 

@@ -1,5 +1,5 @@
 import { lazyReportCache } from '../utils/report'
-import { onBFCacheRestore } from './utils'
+import { onBFCacheRestore } from '../utils/utils'
 
 export default function observerLoad() {
     ['load', 'DOMContentLoaded'].forEach(type => onEvent(type))

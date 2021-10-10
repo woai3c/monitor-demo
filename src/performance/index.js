@@ -8,9 +8,6 @@ import observeFirstScreenRenderTime from './observeFirstScreenRenderTime'
 import xhr from './xhr'
 import fetch from './fetch'
 import fps from './fps'
-import { onBeforeunload, onHidden } from './utils'
-import { isSupportSendBeacon, report } from '../utils/report'
-import { getCache, clearCache } from '../utils/cache'
 
 export default function performance() {
     observeEntries()
@@ -23,16 +20,4 @@ export default function performance() {
     fps()
     observerLoad()
     observeFirstScreenRenderTime()
-    
-    if (isSupportSendBeacon()) {
-        [onBeforeunload, onHidden].forEach(fn => {
-            fn(() => {
-                const data = getCache()
-                if (data.length) {
-                    report(data, true)
-                    clearCache()
-                }
-            })
-        })
-    }
 }

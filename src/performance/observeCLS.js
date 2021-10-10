@@ -1,6 +1,6 @@
-import { isSupportPerformanceObserver, onBFCacheRestore } from './utils'
+import { isSupportPerformanceObserver } from './utils'
+import { onBFCacheRestore, deepCopy } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
-import { deepCopy } from '../utils/utils'
 
 export default function observeCLS() {
     if (!isSupportPerformanceObserver()) return
