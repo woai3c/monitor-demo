@@ -59,6 +59,10 @@ function executeAfterLoad(callback) {
     }
 }
 
+function getPageURL() {
+    return window.location.href 
+}
+
 const cache = [];
 
 function getCache() {
@@ -148,6 +152,18 @@ function reportWithXHR(data) {
 }
 
 function error() {
+    const oldConsoleError = window.console.error; 
+    window.console.error = (...args) => { 
+        oldConsoleError.apply(this, args);
+        lazyReportCache({
+            type: 'error',
+            subType: 'consoleError',
+            startTime: performance.now(),
+            errData: args,
+            pageURL: getPageURL(),
+        });
+    };
+
     // 捕获资源加载失败错误 js css img...
     window.addEventListener('error', e => {
         const target = e.target;
@@ -163,7 +179,7 @@ function error() {
                 html: target.outerHTML,
                 resourceType: target.tagName,
                 paths: e.path.map(item => item.tagName).filter(Boolean),
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             });
         }
     }, true);
@@ -189,7 +205,7 @@ function error() {
             subType: 'promise',
             type: 'error',
             startTime: e.timeStamp,
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
         });
     });
 
@@ -203,7 +219,7 @@ function error() {
                 subType: 'vue',
                 type: 'error',
                 startTime: performance.now(),
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             });
         };
     }
@@ -306,7 +322,7 @@ function observePaint() {
                 ...json,
                 subType: entry.name,
                 type: 'performance',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             };
 
             lazyReportCache(reportData);
@@ -324,7 +340,7 @@ function observePaint() {
                     name: type,
                     subType: type,
                     type: 'performance',
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                     bfc: true,
                 });
             });
@@ -360,7 +376,7 @@ function observeLCP() {
                 name: entry.entryType,
                 subType: entry.entryType,
                 type: 'performance',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             };
             
             lazyReportCache(reportData);
@@ -377,7 +393,7 @@ function observeLCP() {
                 name: 'largest-contentful-paint',
                 subType: 'largest-contentful-paint',
                 type: 'performance',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
                 bfc: true,
             });
         });
@@ -397,7 +413,7 @@ function observeCLS() {
         subType: 'layout-shift',
         name: 'layout-shift',
         type: 'performance',
-        pageURL: window.location.href,
+        pageURL: getPageURL(),
         value: 0,
     };
 
@@ -463,7 +479,7 @@ function observeFID() {
                 json.event = json.name;
                 json.name = json.entryType;
                 json.type = 'performance';
-                json.pageURL = window.location.href;
+                json.pageURL = getPageURL();
                 delete json.cancelable;
 
                 lazyReportCache(json);
@@ -507,7 +523,7 @@ function onInput(event) {
             target: event.target.tagName,
             startTime: event.timeStamp,
             type: 'performance',
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
         });
 
         eachEventType(window.removeEventListener);
@@ -534,7 +550,7 @@ function observerLoad() {
                     startTime: performance.now() - event.timeStamp,
                     subType: type,
                     type: 'performance',
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                     bfc: true,
                 });
             });
@@ -573,7 +589,7 @@ function checkDOMChange() {
                 type: 'performance',
                 subType: 'first-screen-render-time',
                 startTime: getRenderTime(),
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             });
 
             entries = null;
@@ -626,7 +642,7 @@ function observeFirstScreenRenderTime() {
                 type: 'performance',
                 subType: 'first-screen-render-time',
                 bfc: true,
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             });
         });
     });
@@ -821,7 +837,7 @@ function pv() {
         type: 'behavior',
         subType: 'pv',
         startTime: performance.now(),
-        pageURL: window.location.href,
+        pageURL: getPageURL(),
         referrer: document.referrer,
         uuid: getUUID(),
     });
@@ -833,7 +849,7 @@ function pageAccessDuration() {
             type: 'behavior',
             subType: 'pageAccessDuration',
             startTime: performance.now(),
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
             uuid: getUUID(),
         }, true);
     });
@@ -856,7 +872,7 @@ function pageAccessHeight() {
             duration: now - startTime,
             type: 'behavior',
             subType: 'pageAccessHeight',
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
             value: toPercent(scrollTop + viewportHeight / pageHeight),
             uuid: getUUID(),
         }, true);
@@ -882,7 +898,7 @@ function onScroll() {
             duration: now - startTime,
             type: 'behavior',
             subType: 'pageAccessHeight',
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
             value: toPercent(scrollTop + viewportHeight / pageHeight),
             uuid: getUUID(),
         });
@@ -922,7 +938,7 @@ function onClick() {
                     target: target.tagName,
                     paths: event.path.map(item => item.tagName).filter(Boolean),
                     startTime: event.timeStamp,
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                     outerHTML: target.outerHTML,
                     innerHTML: target.innerHTML,
                     width: target.offsetWidth,

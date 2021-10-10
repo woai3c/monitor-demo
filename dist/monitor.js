@@ -62,6 +62,10 @@ var monitor = (function () {
         }
     }
 
+    function getPageURL() {
+        return window.location.href 
+    }
+
     const cache = [];
 
     function getCache() {
@@ -151,6 +155,18 @@ var monitor = (function () {
     }
 
     function error() {
+        const oldConsoleError = window.console.error; 
+        window.console.error = (...args) => { 
+            oldConsoleError.apply(this, args);
+            lazyReportCache({
+                type: 'error',
+                subType: 'consoleError',
+                startTime: performance.now(),
+                errData: args,
+                pageURL: getPageURL(),
+            });
+        };
+
         // 捕获资源加载失败错误 js css img...
         window.addEventListener('error', e => {
             const target = e.target;
@@ -166,7 +182,7 @@ var monitor = (function () {
                     html: target.outerHTML,
                     resourceType: target.tagName,
                     paths: e.path.map(item => item.tagName).filter(Boolean),
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                 });
             }
         }, true);
@@ -192,7 +208,7 @@ var monitor = (function () {
                 subType: 'promise',
                 type: 'error',
                 startTime: e.timeStamp,
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             });
         });
 
@@ -206,7 +222,7 @@ var monitor = (function () {
                     subType: 'vue',
                     type: 'error',
                     startTime: performance.now(),
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                 });
             };
         }
@@ -309,7 +325,7 @@ var monitor = (function () {
                     ...json,
                     subType: entry.name,
                     type: 'performance',
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                 };
 
                 lazyReportCache(reportData);
@@ -327,7 +343,7 @@ var monitor = (function () {
                         name: type,
                         subType: type,
                         type: 'performance',
-                        pageURL: window.location.href,
+                        pageURL: getPageURL(),
                         bfc: true,
                     });
                 });
@@ -363,7 +379,7 @@ var monitor = (function () {
                     name: entry.entryType,
                     subType: entry.entryType,
                     type: 'performance',
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                 };
                 
                 lazyReportCache(reportData);
@@ -380,7 +396,7 @@ var monitor = (function () {
                     name: 'largest-contentful-paint',
                     subType: 'largest-contentful-paint',
                     type: 'performance',
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                     bfc: true,
                 });
             });
@@ -400,7 +416,7 @@ var monitor = (function () {
             subType: 'layout-shift',
             name: 'layout-shift',
             type: 'performance',
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
             value: 0,
         };
 
@@ -466,7 +482,7 @@ var monitor = (function () {
                     json.event = json.name;
                     json.name = json.entryType;
                     json.type = 'performance';
-                    json.pageURL = window.location.href;
+                    json.pageURL = getPageURL();
                     delete json.cancelable;
 
                     lazyReportCache(json);
@@ -510,7 +526,7 @@ var monitor = (function () {
                 target: event.target.tagName,
                 startTime: event.timeStamp,
                 type: 'performance',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             });
 
             eachEventType(window.removeEventListener);
@@ -537,7 +553,7 @@ var monitor = (function () {
                         startTime: performance.now() - event.timeStamp,
                         subType: type,
                         type: 'performance',
-                        pageURL: window.location.href,
+                        pageURL: getPageURL(),
                         bfc: true,
                     });
                 });
@@ -576,7 +592,7 @@ var monitor = (function () {
                     type: 'performance',
                     subType: 'first-screen-render-time',
                     startTime: getRenderTime(),
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                 });
 
                 entries = null;
@@ -629,7 +645,7 @@ var monitor = (function () {
                     type: 'performance',
                     subType: 'first-screen-render-time',
                     bfc: true,
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                 });
             });
         });
@@ -824,7 +840,7 @@ var monitor = (function () {
             type: 'behavior',
             subType: 'pv',
             startTime: performance.now(),
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
             referrer: document.referrer,
             uuid: getUUID(),
         });
@@ -836,7 +852,7 @@ var monitor = (function () {
                 type: 'behavior',
                 subType: 'pageAccessDuration',
                 startTime: performance.now(),
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
                 uuid: getUUID(),
             }, true);
         });
@@ -859,7 +875,7 @@ var monitor = (function () {
                 duration: now - startTime,
                 type: 'behavior',
                 subType: 'pageAccessHeight',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
                 value: toPercent(scrollTop + viewportHeight / pageHeight),
                 uuid: getUUID(),
             }, true);
@@ -885,7 +901,7 @@ var monitor = (function () {
                 duration: now - startTime,
                 type: 'behavior',
                 subType: 'pageAccessHeight',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
                 value: toPercent(scrollTop + viewportHeight / pageHeight),
                 uuid: getUUID(),
             });
@@ -925,7 +941,7 @@ var monitor = (function () {
                         target: target.tagName,
                         paths: event.path.map(item => item.tagName).filter(Boolean),
                         startTime: event.timeStamp,
-                        pageURL: window.location.href,
+                        pageURL: getPageURL(),
                         outerHTML: target.outerHTML,
                         innerHTML: target.innerHTML,
                         width: target.offsetWidth,
