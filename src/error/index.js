@@ -1,4 +1,5 @@
 import { lazyReportCache } from '../utils/report'
+import { onBFCacheRestore } from '../utils/utils'
 import config from '../config'
 
 export default function error() {
@@ -61,4 +62,8 @@ export default function error() {
             })
         }
     }
+
+    onBFCacheRestore(() => {
+        error()
+    })
 }
