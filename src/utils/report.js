@@ -1,6 +1,6 @@
 import { originalOpen, originalSend } from './xhr'
 import { addCache, getCache, clearCache } from './cache'
-import { sessionID } from '../utils/generateUniqueID'
+import generateUniqueID from '../utils/generateUniqueID'
 import config from '../config'
 
 export function isSupportSendBeacon() {
@@ -9,6 +9,7 @@ export function isSupportSendBeacon() {
 
 const sendBeacon = isSupportSendBeacon() ? window.navigator.sendBeacon.bind(window.navigator) : reportWithXHR
 
+const sessionID = generateUniqueID()
 export function report(data, isImmediate = false) {
     if (!config.url) {
         console.error('请设置上传 url 地址')
