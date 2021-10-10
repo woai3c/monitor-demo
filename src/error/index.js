@@ -1,4 +1,4 @@
-import { report } from '../utils/report'
+import { lazyReportCache } from '../utils/report'
 import config from '../config'
 
 export default function error() {
@@ -9,7 +9,7 @@ export default function error() {
 
         if (target.src || target.href) {
             const url = target.src || target.href
-            report({
+            lazyReportCache({
                 url,
                 type: 'error',
                 subType: 'resource',
@@ -24,7 +24,7 @@ export default function error() {
 
     // 监听 js 错误
     window.onerror = (msg, url, line, column, error) => {
-        report({
+        lazyReportCache({
             msg,
             line,
             column,
@@ -38,17 +38,27 @@ export default function error() {
 
     // 监听 promise 错误 缺点是获取不到列数据
     window.addEventListener('unhandledrejection', e => {
-        report({
+        lazyReportCache({
             reason: e.reason?.stack,
             subType: 'promise',
             type: 'error',
             startTime: e.timeStamp,
+            pageURL: window.location.href,
         })
     })
 
     if (config.Vue) {
         config.Vue.config.errorHandler = (err, vm, info) => {
-            console.log(err, vm, info)
+            console.error(err)
+
+            lazyReportCache({
+                info,
+                error: err.stack,
+                subType: 'vue',
+                type: 'error',
+                startTime: performance.now(),
+                pageURL: window.location.href,
+            })
         }
     }
 }
