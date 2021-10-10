@@ -1,4 +1,4 @@
-import { executeAfterLoad, onBFCacheRestore } from '../utils/utils'
+import { executeAfterLoad, onBFCacheRestore, getPageURL } from '../utils/utils'
 import { isLCPDone } from './observeLCP'
 import { lazyReportCache } from '../utils/report'
 
@@ -19,7 +19,7 @@ function checkDOMChange() {
                 type: 'performance',
                 subType: 'first-screen-render-time',
                 startTime: getRenderTime(),
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             })
 
             entries = null
@@ -72,7 +72,7 @@ export default function observeFirstScreenRenderTime() {
                 type: 'performance',
                 subType: 'first-screen-render-time',
                 bfc: true,
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             })
         })
     })

@@ -1,5 +1,5 @@
 import { isSupportPerformanceObserver } from './utils'
-import { onBFCacheRestore } from '../utils/utils'
+import { onBFCacheRestore, getPageURL } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
 
 export default function observePaint() {
@@ -18,7 +18,7 @@ export default function observePaint() {
                 ...json,
                 subType: entry.name,
                 type: 'performance',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             }
 
             lazyReportCache(reportData)
@@ -36,7 +36,7 @@ export default function observePaint() {
                     name: type,
                     subType: type,
                     type: 'performance',
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                     bfc: true,
                 })
             })

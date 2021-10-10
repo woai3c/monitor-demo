@@ -1,5 +1,5 @@
 import { isSupportPerformanceObserver } from './utils'
-import { onBFCacheRestore } from '../utils/utils'
+import { onBFCacheRestore, getPageURL } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
 
 export default function observeFID() {
@@ -19,7 +19,7 @@ export default function observeFID() {
                 json.event = json.name
                 json.name = json.entryType
                 json.type = 'performance'
-                json.pageURL = window.location.href
+                json.pageURL = getPageURL()
                 delete json.cancelable
 
                 lazyReportCache(json)
@@ -63,7 +63,7 @@ function onInput(event) {
             target: event.target.tagName,
             startTime: event.timeStamp,
             type: 'performance',
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
         })
 
         eachEventType(window.removeEventListener)

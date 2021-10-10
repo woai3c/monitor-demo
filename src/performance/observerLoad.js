@@ -1,5 +1,5 @@
 import { lazyReportCache } from '../utils/report'
-import { onBFCacheRestore } from '../utils/utils'
+import { onBFCacheRestore, getPageURL } from '../utils/utils'
 
 export default function observerLoad() {
     ['load', 'DOMContentLoaded'].forEach(type => onEvent(type))
@@ -11,7 +11,7 @@ export default function observerLoad() {
                     startTime: performance.now() - event.timeStamp,
                     subType: type,
                     type: 'performance',
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                     bfc: true,
                 })
             })

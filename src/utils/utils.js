@@ -54,3 +54,7 @@ export function executeAfterLoad(callback) {
         window.addEventListener('load', onLoad, true)
     }
 }
+
+export function getPageURL() {
+    return window.location.href 
+}

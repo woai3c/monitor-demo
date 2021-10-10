@@ -1,5 +1,5 @@
 import { isSupportPerformanceObserver } from './utils'
-import { onBFCacheRestore, deepCopy } from '../utils/utils'
+import { onBFCacheRestore, deepCopy, getPageURL } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
 
 export default function observeCLS() {
@@ -15,7 +15,7 @@ export default function observeCLS() {
         subType: 'layout-shift',
         name: 'layout-shift',
         type: 'performance',
-        pageURL: window.location.href,
+        pageURL: getPageURL(),
         value: 0,
     }
 

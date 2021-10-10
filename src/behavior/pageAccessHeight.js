@@ -1,6 +1,6 @@
 import { lazyReportCache, report } from '../utils/report'
 import { getUUID } from './utils'
-import { onBeforeunload, executeAfterLoad } from '../utils/utils'
+import { onBeforeunload, executeAfterLoad, getPageURL } from '../utils/utils'
 
 let timer
 let startTime = 0
@@ -19,7 +19,7 @@ export default function pageAccessHeight() {
             duration: now - startTime,
             type: 'behavior',
             subType: 'pageAccessHeight',
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
             value: toPercent(scrollTop + viewportHeight / pageHeight),
             uuid: getUUID(),
         }, true)
@@ -45,7 +45,7 @@ function onScroll() {
             duration: now - startTime,
             type: 'behavior',
             subType: 'pageAccessHeight',
-            pageURL: window.location.href,
+            pageURL: getPageURL(),
             value: toPercent(scrollTop + viewportHeight / pageHeight),
             uuid: getUUID(),
         })

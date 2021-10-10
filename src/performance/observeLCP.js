@@ -1,5 +1,5 @@
 import { isSupportPerformanceObserver } from './utils'
-import { onBFCacheRestore } from '../utils/utils'
+import { onBFCacheRestore, getPageURL } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
 
 let lcpDone = false
@@ -30,7 +30,7 @@ export default function observeLCP() {
                 name: entry.entryType,
                 subType: entry.entryType,
                 type: 'performance',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
             }
             
             lazyReportCache(reportData)
@@ -47,7 +47,7 @@ export default function observeLCP() {
                 name: 'largest-contentful-paint',
                 subType: 'largest-contentful-paint',
                 type: 'performance',
-                pageURL: window.location.href,
+                pageURL: getPageURL(),
                 bfc: true,
             })
         })

@@ -1,4 +1,5 @@
 import { lazyReportCache } from '../utils/report'
+import { getPageURL } from '../utils/utils'
 
 export default function onClick() {
     ['mousedown', 'touchstart'].forEach(eventType => {
@@ -20,7 +21,7 @@ export default function onClick() {
                     target: target.tagName,
                     paths: event.path.map(item => item.tagName).filter(Boolean),
                     startTime: event.timeStamp,
-                    pageURL: window.location.href,
+                    pageURL: getPageURL(),
                     outerHTML: target.outerHTML,
                     innerHTML: target.innerHTML,
                     width: target.offsetWidth,
