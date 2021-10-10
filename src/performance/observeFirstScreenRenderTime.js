@@ -1,5 +1,4 @@
-import { executeAfterLoad } from './utils'
-import { onBFCacheRestore } from '../utils/utils'
+import { executeAfterLoad, onBFCacheRestore } from '../utils/utils'
 import { isLCPDone } from './observeLCP'
 import { lazyReportCache } from '../utils/report'
 
@@ -35,7 +34,7 @@ export default function observeFirstScreenRenderTime() {
     if (!MutationObserver) return
 
     const next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout
-    const ignoreDOMList = ['style', 'script', 'link']
+    const ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK']
 
     observer = new MutationObserver(mutationList => {
         checkDOMChange()
@@ -46,7 +45,7 @@ export default function observeFirstScreenRenderTime() {
         for (const mutation of mutationList) {
             if (mutation.addedNodes.length && isInScreen(mutation.target)) {
                 for (const node of mutation.addedNodes) {
-                    if (node.nodeType === 1 && !ignoreDOMList.includes(node.localName) && isInScreen(node)) {
+                    if (node.nodeType === 1 && !ignoreDOMList.includes(node.tagName) && isInScreen(node)) {
                         entry.children.push(node)
                     }
                 }
