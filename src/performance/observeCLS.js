@@ -1,5 +1,5 @@
 import { isSupportPerformanceObserver } from './utils'
-import { onBFCacheRestore, deepCopy, getPageURL } from '../utils/utils'
+import { onBFCacheRestore, deepCopy, getPageURL, onHidden } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
 
 export default function observeCLS() {
@@ -55,6 +55,12 @@ export default function observeCLS() {
 
     const observer = new PerformanceObserver(entryHandler)
     observer.observe({ type: 'layout-shift', buffered: true })
+
+    if (observer) {
+        onHidden(() => {
+            observer.takeRecords().map(entryHandler)
+        })
+    }
 }
 
 function formatCLSEntry(entry) {
