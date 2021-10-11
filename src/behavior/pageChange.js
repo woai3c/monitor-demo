@@ -1,5 +1,6 @@
 import { getPageURL } from '../utils/utils'
 import { lazyReportCache } from '../utils/report'
+import { getUUID } from './utils'
 
 export default function pageChange() {
     let from = ''
@@ -12,6 +13,7 @@ export default function pageChange() {
             type: 'behavior',
             subType: 'popstate',
             startTime: performance.now,
+            uuid: getUUID(),
         })
 
         from = to
@@ -27,6 +29,7 @@ export default function pageChange() {
             type: 'behavior',
             subType: 'hashchange',
             startTime: performance.now,
+            uuid: getUUID(),
         })
 
         oldURL = newURL

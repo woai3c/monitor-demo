@@ -1,4 +1,5 @@
 import { lazyReportCache } from '../utils/report'
+import { getUUID } from './utils'
 
 export default function onVueRouter(router) {
     router.beforeEach((to, from, next) => {
@@ -16,10 +17,11 @@ export default function onVueRouter(router) {
             data,
             name: to.name || to.path,
             type: 'behavior',
-            subType: 'vue-router-change',
+            subType: ['vue-router-change', 'pv'],
             startTime: performance.now(),
             from: from.fullPath,
             to: to.fullPath,
+            uuid: getUUID(),
         })
 
         next()
