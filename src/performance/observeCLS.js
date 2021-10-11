@@ -46,6 +46,7 @@ export default function observeCLS() {
                 if (sessionValue > cls.value) {
                     cls.value = sessionValue
                     cls.entries = sessionEntries
+                    cls.startTime = performance.now()
                     lazyReportCache(deepCopy(cls))
                 }
             }

@@ -12,7 +12,7 @@ export default function pageChange() {
             to,
             type: 'behavior',
             subType: 'popstate',
-            startTime: performance.now,
+            startTime: performance.now(),
             uuid: getUUID(),
         })
 
@@ -28,7 +28,7 @@ export default function pageChange() {
             to: newURL,
             type: 'behavior',
             subType: 'hashchange',
-            startTime: performance.now,
+            startTime: performance.now(),
             uuid: getUUID(),
         })
 

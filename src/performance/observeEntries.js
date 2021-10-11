@@ -44,6 +44,7 @@ export function observeEvent(entryType) {
                 responseHeaderSize: entry.transferSize - entry.encodedBodySize, // 响应头部大小
                 resourceSize: entry.decodedBodySize, // 资源解压后的大小
                 isCache: isCache(entry), // 是否命中缓存
+                startTime: performance.now(),
             })
         }
     }

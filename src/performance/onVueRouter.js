@@ -35,7 +35,7 @@ export default function onVueRouter(Vue, router) {
                         type: 'performance',
                         subType: 'vue-router-change-paint',
                         duration: now - startTime,
-                        startTime: now - startTime,
+                        startTime: now,
                         pageURL: getPageURL(),
                     })
                 }, 1000)
