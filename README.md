@@ -1,6 +1,9 @@
 # monitor
 一个简易的前端监控 SDK DEMO，仅供学习，请勿在生产环境中使用。
 
+## 文档
+* [前端监控 SDK 的一些技术要点原理分析](https://github.com/woai3c/Front-end-articles/issues/26)
+
 ## 使用
 ### 直接 HTML 文件中引入使用
 ```html
