@@ -12,7 +12,6 @@
 </script>
 ```
 ### 在 npm 中使用
-下载
 ```
 npm i monitor-demo
 ```
