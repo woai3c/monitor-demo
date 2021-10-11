@@ -1154,7 +1154,7 @@ var monitor = (function () {
         type: 'behavior',
         subType: 'page-access-height',
         pageURL: getPageURL(),
-        value: toPercent(scrollTop + viewportHeight / pageHeight),
+        value: toPercent((scrollTop + viewportHeight) / pageHeight),
         uuid: getUUID()
       }, true);
     }); // 页面加载完成后初始化记录当前访问高度、时间
@@ -1179,7 +1179,7 @@ var monitor = (function () {
         type: 'behavior',
         subType: 'page-access-height',
         pageURL: getPageURL(),
-        value: toPercent(scrollTop + viewportHeight / pageHeight),
+        value: toPercent((scrollTop + viewportHeight) / pageHeight),
         uuid: getUUID()
       });
     }
