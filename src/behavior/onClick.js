@@ -20,7 +20,7 @@ export default function onClick() {
                     type: 'behavior',
                     subType: 'click',
                     target: target.tagName,
-                    paths: event.path.map(item => item.tagName).filter(Boolean),
+                    paths: event.path?.map(item => item.tagName).filter(Boolean),
                     startTime: event.timeStamp,
                     pageURL: getPageURL(),
                     outerHTML: target.outerHTML,
