@@ -20,7 +20,7 @@ export default function pageAccessHeight() {
             type: 'behavior',
             subType: 'page-access-height',
             pageURL: getPageURL(),
-            value: toPercent(scrollTop + viewportHeight / pageHeight),
+            value: toPercent((scrollTop + viewportHeight) / pageHeight),
             uuid: getUUID(),
         }, true)
     })
@@ -46,7 +46,7 @@ function onScroll() {
             type: 'behavior',
             subType: 'page-access-height',
             pageURL: getPageURL(),
-            value: toPercent(scrollTop + viewportHeight / pageHeight),
+            value: toPercent((scrollTop + viewportHeight) / pageHeight),
             uuid: getUUID(),
         })
     }
