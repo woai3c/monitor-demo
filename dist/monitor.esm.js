@@ -665,6 +665,12 @@ function observeCLS() {
     type: 'layout-shift',
     buffered: true
   });
+
+  if (observer) {
+    onHidden(function () {
+      observer.takeRecords().map(entryHandler);
+    });
+  }
 }
 
 function formatCLSEntry(entry) {
