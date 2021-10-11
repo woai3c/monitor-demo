@@ -24,6 +24,7 @@ const monitor = {
             })
         })
     },
+    report,
 }
 
 export default monitor
