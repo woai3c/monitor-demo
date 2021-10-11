@@ -446,8 +446,9 @@ function observeEvent(entryType) {
           // 响应头部大小
           resourceSize: entry.decodedBodySize,
           // 资源解压后的大小
-          isCache: isCache(entry) // 是否命中缓存
-
+          isCache: isCache(entry),
+          // 是否命中缓存
+          startTime: performance.now()
         });
       }
     } catch (err) {
@@ -649,6 +650,7 @@ function observeCLS() {
           if (sessionValue > cls.value) {
             cls.value = sessionValue;
             cls.entries = sessionEntries;
+            cls.startTime = performance.now();
             lazyReportCache(deepCopy(cls));
           }
         }
@@ -808,7 +810,7 @@ function checkDOMChange() {
       observer && observer.disconnect();
       lazyReportCache({
         type: 'performance',
-        subType: 'first-screen-render-paint',
+        subType: 'first-screen-paint',
         startTime: getRenderTime(),
         pageURL: getPageURL()
       });
@@ -820,7 +822,7 @@ function checkDOMChange() {
 }
 
 var entries = [];
-function observeFirstScreenRenderPaint() {
+function observeFirstScreenPaint() {
   if (!MutationObserver) return;
   var next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout;
   var ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK'];
@@ -878,7 +880,7 @@ function observeFirstScreenRenderPaint() {
       lazyReportCache({
         startTime: performance.now() - event.timeStamp,
         type: 'performance',
-        subType: 'first-screen-render-paint',
+        subType: 'first-screen-paint',
         bfc: true,
         pageURL: getPageURL()
       });
@@ -1073,7 +1075,7 @@ function onVueRouter$1(Vue, router) {
             type: 'performance',
             subType: 'vue-router-change-paint',
             duration: now - startTime,
-            startTime: now - startTime,
+            startTime: now,
             pageURL: getPageURL()
           });
         }, 1000);
@@ -1094,7 +1096,7 @@ function performance$1() {
   fetch();
   fps();
   observerLoad();
-  observeFirstScreenRenderPaint();
+  observeFirstScreenPaint();
 
   if ((_config$vue = config.vue) !== null && _config$vue !== void 0 && _config$vue.Vue && (_config$vue2 = config.vue) !== null && _config$vue2 !== void 0 && _config$vue2.router) {
     onVueRouter$1(config.vue.Vue, config.vue.router);
@@ -1201,6 +1203,8 @@ function onClick() {
     window.addEventListener(eventType, function (event) {
       clearTimeout(timer);
       timer = setTimeout(function () {
+        var _event$path;
+
         var target = event.target;
 
         var _target$getBoundingCl = target.getBoundingClientRect(),
@@ -1216,7 +1220,7 @@ function onClick() {
           type: 'behavior',
           subType: 'click',
           target: target.tagName,
-          paths: event.path.map(function (item) {
+          paths: (_event$path = event.path) === null || _event$path === void 0 ? void 0 : _event$path.map(function (item) {
             return item.tagName;
           }).filter(Boolean),
           startTime: event.timeStamp,
@@ -1228,7 +1232,8 @@ function onClick() {
           viewport: {
             width: window.innerWidth,
             height: window.innerHeight
-          }
+          },
+          uuid: getUUID()
         });
       }, 500);
     });
@@ -1250,10 +1255,11 @@ function onVueRouter(router) {
       data: data,
       name: to.name || to.path,
       type: 'behavior',
-      subType: 'vue-router-change',
+      subType: ['vue-router-change', 'pv'],
       startTime: performance.now(),
       from: from.fullPath,
-      to: to.fullPath
+      to: to.fullPath,
+      uuid: getUUID()
     });
     next();
   });
@@ -1268,7 +1274,8 @@ function pageChange() {
       to: to,
       type: 'behavior',
       subType: 'popstate',
-      startTime: performance.now
+      startTime: performance.now(),
+      uuid: getUUID()
     });
     from = to;
   }, true);
@@ -1280,7 +1287,8 @@ function pageChange() {
       to: newURL,
       type: 'behavior',
       subType: 'hashchange',
-      startTime: performance.now
+      startTime: performance.now(),
+      uuid: getUUID()
     });
     oldURL = newURL;
   }, true);
