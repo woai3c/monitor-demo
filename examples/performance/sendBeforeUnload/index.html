@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>error</title>
+</head>
+<body>
+    <script src="index.js"></script>
+    <script>
+        // 执行 npm run server 打开服务器，再用 live server 打开本页面
+        // 然后关闭页面，可以查看到服务器接收到了 43380 字节的数据
+        window.addEventListener('beforeunload', () => {
+            // navigator.sendBeacon('http://localhost:8080/reportData', JSON.stringify(reportData))
+            const xhr = new XMLHttpRequest()
+            xhr.open('post', 'http://localhost:8080/reportData')
+            xhr.send(JSON.stringify(reportData))
+        }, true)
+    </script>
+</body>
+</html>
