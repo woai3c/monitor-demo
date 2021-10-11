@@ -1326,7 +1326,8 @@ var monitor = {
         }
       });
     });
-  }
+  },
+  report: report
 };
 
 module.exports = monitor;

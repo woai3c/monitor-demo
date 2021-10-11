@@ -1327,7 +1327,8 @@ var monitor = (function () {
           }
         });
       });
-    }
+    },
+    report: report
   };
 
   return monitor;

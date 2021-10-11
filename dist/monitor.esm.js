@@ -1324,7 +1324,8 @@ var monitor = {
         }
       });
     });
-  }
+  },
+  report: report
 };
 
 export { monitor as default };
