@@ -4,7 +4,7 @@
 ## 使用
 ### 直接 HTML 文件中引入使用
 ```html
-<script src="../../dist/monitor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/monitor-demo/dist/monitor.js"></script>
 <script>
     monitor.init({
         url: 'http://localhost:8080/reportData'
