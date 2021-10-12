@@ -9,7 +9,7 @@
 ```
 npm run server
 ```
-然后用 vscode 的 `live server` 插件访问 examples 目录上的 html 文件，即可尝试体验监控 sdk 的效果。同时打开开发者工具，点击 network 标签，可以看到上报数据的发送请求。
+然后用 vscode 的 `live server` 插件访问 examples 目录上的 html 文件，即可尝试体验监控 SDK 的效果。同时打开开发者工具，点击 network 标签，可以看到上报数据的发送请求。
 
 ## 使用
 ### 直接 HTML 文件中引入使用
