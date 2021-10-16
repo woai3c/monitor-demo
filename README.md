@@ -22,9 +22,11 @@ npm run server
 </script>
 ```
 ### 在 npm 中使用
+安装
 ```
 npm i monitor-demo
 ```
+引入
 ```js
 import monitor from 'monitor-demo'
 // 如果有 Vue 的话
