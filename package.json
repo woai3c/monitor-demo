@@ -1,6 +1,6 @@
 {
   "name": "monitor-demo",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "前端监控 sdk demo",
   "author": "tanguangzhi",
   "main": "dist/monitor.cjs.js",

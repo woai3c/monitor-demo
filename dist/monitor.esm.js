@@ -829,12 +829,16 @@ var entries = [];
 function observeFirstScreenPaint() {
   if (!MutationObserver) return;
   var next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout;
-  var ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK'];
+  var ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK', 'META'];
   observer = new MutationObserver(function (mutationList) {
     checkDOMChange();
     var entry = {
+      startTime: 0,
       children: []
     };
+    next(function () {
+      entry.startTime = performance.now();
+    });
 
     var _iterator = _createForOfIteratorHelper(mutationList),
         _step;
@@ -843,22 +847,13 @@ function observeFirstScreenPaint() {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var mutation = _step.value;
 
-        if (mutation.addedNodes.length && isInScreen(mutation.target)) {
-          var _iterator2 = _createForOfIteratorHelper(mutation.addedNodes),
-              _step2;
+        if (mutation.addedNodes.length) {
+          for (var _i = 0, _Array$from = Array.from(mutation.addedNodes); _i < _Array$from.length; _i++) {
+            var node = _Array$from[_i];
 
-          try {
-            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-              var node = _step2.value;
-
-              if (node.nodeType === 1 && !ignoreDOMList.includes(node.tagName) && isInScreen(node)) {
-                entry.children.push(node);
-              }
+            if (node.nodeType === 1 && !ignoreDOMList.includes(node.tagName) && !isInclude(node, entry.children)) {
+              entry.children.push(node);
             }
-          } catch (err) {
-            _iterator2.e(err);
-          } finally {
-            _iterator2.f();
           }
         }
       }
@@ -870,9 +865,6 @@ function observeFirstScreenPaint() {
 
     if (entry.children.length) {
       entries.push(entry);
-      next(function () {
-        entry.startTime = performance.now();
-      });
     }
   });
   observer.observe(document, {
@@ -895,8 +887,22 @@ function observeFirstScreenPaint() {
 function getRenderTime() {
   var startTime = 0;
   entries.forEach(function (entry) {
-    if (entry.startTime > startTime) {
-      startTime = entry.startTime;
+    var _iterator2 = _createForOfIteratorHelper(entry.children),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var node = _step2.value;
+
+        if (isInScreen(node) && entry.startTime > startTime && needToCalculate(node)) {
+          startTime = entry.startTime;
+          break;
+        }
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
     }
   }); // 需要和当前页面所有加载图片的时间做对比，取最大值
   // 图片请求时间要小于 startTime，响应结束时间要大于 startTime
@@ -909,17 +915,27 @@ function getRenderTime() {
   return startTime;
 }
 
+function isInclude(node, arr) {
+  if (!node || node === document.documentElement) {
+    return false;
+  }
+
+  if (arr.includes(node)) {
+    return true;
+  }
+
+  return isInclude(node.parentElement, arr);
+}
+
 var viewportWidth = window.innerWidth;
 var viewportHeight$1 = window.innerHeight; // dom 对象是否在屏幕内
 
 function isInScreen(dom) {
   var rectInfo = dom.getBoundingClientRect();
 
-  if (rectInfo.left < viewportWidth && rectInfo.top < viewportHeight$1) {
+  if (rectInfo.left >= 0 && rectInfo.left < viewportWidth && rectInfo.top >= 0 && rectInfo.top < viewportHeight$1) {
     return true;
   }
-
-  return false;
 }
 
 function overwriteOpenAndSend() {
