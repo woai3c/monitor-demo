@@ -34,18 +34,26 @@ export default function observeFirstScreenPaint() {
     if (!MutationObserver) return
 
     const next = window.requestAnimationFrame ? requestAnimationFrame : setTimeout
-    const ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK']
-
+    const ignoreDOMList = ['STYLE', 'SCRIPT', 'LINK', 'META']
     observer = new MutationObserver(mutationList => {
         checkDOMChange()
         const entry = {
+            startTime: 0,
             children: [],
         }
+        
+        next(() => {
+            entry.startTime = performance.now()
+        })
 
         for (const mutation of mutationList) {
-            if (mutation.addedNodes.length && isInScreen(mutation.target)) {
-                for (const node of mutation.addedNodes) {
-                    if (node.nodeType === 1 && !ignoreDOMList.includes(node.tagName) && isInScreen(node)) {
+            if (mutation.addedNodes.length) {
+                for (const node of Array.from(mutation.addedNodes)) {
+                    if (
+                        node.nodeType === 1 
+                        && !ignoreDOMList.includes(node.tagName)
+                        && !isInclude(node, entry.children)
+                    ) {
                         entry.children.push(node)
                     }
                 }
@@ -54,9 +62,6 @@ export default function observeFirstScreenPaint() {
 
         if (entry.children.length) {
             entries.push(entry)
-            next(() => {
-                entry.startTime = performance.now()
-            })
         }
     })
 
@@ -81,8 +86,11 @@ export default function observeFirstScreenPaint() {
 function getRenderTime() {
     let startTime = 0
     entries.forEach(entry => {
-        if (entry.startTime > startTime) {
-            startTime = entry.startTime
+        for (const node of entry.children) {
+            if (isInScreen(node) && entry.startTime > startTime && needToCalculate(node)) {
+                startTime = entry.startTime
+                break
+            }
         }
     })
 
@@ -101,15 +109,42 @@ function getRenderTime() {
     return startTime
 }
 
+function needToCalculate(node) {
+    // 用于统计的图片不用计算
+    if (node.tagName === 'IMG' && node.width < 2 && node.height < 2) {
+        return false
+    }
+
+    // 隐藏的元素不用计算
+    if (node.style.display === 'none') return false
+
+    return true
+}
+
+function isInclude(node, arr) {
+    if (!node || node === document.documentElement) {
+        return false
+    }
+    
+    if (arr.includes(node)) {
+        return true
+    }
+
+    return isInclude(node.parentElement, arr)
+}
+
 const viewportWidth = window.innerWidth
 const viewportHeight = window.innerHeight
 
 // dom 对象是否在屏幕内
 function isInScreen(dom) {
     const rectInfo = dom.getBoundingClientRect()
-    if (rectInfo.left < viewportWidth && rectInfo.top < viewportHeight) {
+    if (
+        rectInfo.left >= 0 
+        && rectInfo.left < viewportWidth
+        && rectInfo.top >= 0
+        && rectInfo.top < viewportHeight
+    ) {
         return true
     }
-
-    return false
 }
