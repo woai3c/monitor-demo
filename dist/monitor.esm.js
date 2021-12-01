@@ -915,6 +915,17 @@ function getRenderTime() {
   return startTime;
 }
 
+function needToCalculate(node) {
+  // 隐藏的元素不用计算
+  if (window.getComputedStyle(node).display === 'none') return false; // 用于统计的图片不用计算
+
+  if (node.tagName === 'IMG' && node.width < 2 && node.height < 2) {
+    return false;
+  }
+
+  return true;
+}
+
 function isInclude(node, arr) {
   if (!node || node === document.documentElement) {
     return false;
