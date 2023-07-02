@@ -21,7 +21,7 @@ npm run server
     })
 </script>
 ```
-### 在 npm 中使用
+### 通过 npm 使用
 安装
 ```
 npm i monitor-demo
