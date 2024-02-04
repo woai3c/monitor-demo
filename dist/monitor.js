@@ -688,7 +688,7 @@ var monitor = (function () {
       observeFID();
     });
 
-    if (!isSupportPerformanceObserver()) {
+    if (isSupportPerformanceObserver()) {
       var entryHandler = function entryHandler(list) {
         if (observer) {
           observer.disconnect();

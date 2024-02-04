@@ -7,7 +7,7 @@ export default function observeFID() {
         observeFID()
     })
     
-    if (!isSupportPerformanceObserver()) {
+    if (isSupportPerformanceObserver()) {
         const entryHandler = (list) => {
             if (observer) {
                 observer.disconnect()
